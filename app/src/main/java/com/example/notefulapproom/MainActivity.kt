@@ -18,29 +18,31 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
+    //step 2: Do your UI, declare and initialize them in your activity
     //my views
     lateinit var edNotes: EditText
     lateinit var btnSumbmit: Button
 
-    //my variables
-    //lateinit var NotesList: ArrayList<List<Any>>
-
     //step 7: Managing Data
-    // 1) create an instance of the database.
+    //step 7- 1) create an instance of the database.
     lateinit var NotesDB:NotesDatabase
-    // 2) call Dao method that you need
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        NotesDB= NotesDatabase.getInstance(this)
+        //step 2:
         edNotes=findViewById(R.id.edNots)
         btnSumbmit=findViewById(R.id.btnSubmit)
+
+        //step 7- 1) create an instance of the database.
+        NotesDB= NotesDatabase.getInstance(this)
 
         //getNote()
 
         btnSumbmit.setOnClickListener(){
+
             if(edNotes.text.isNotEmpty()){
                 CoroutineScope(Dispatchers.IO).launch {
                     // 2) call Dao method that you need (here insertNote)
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             }else
                 Toast.makeText(applicationContext, "please fill the missing entry!", Toast.LENGTH_SHORT).show()
             edNotes.text.clear()
+
         }//end btnSum listener
 
 
@@ -60,7 +63,7 @@ class MainActivity : AppCompatActivity() {
     fun getNote(){
         CoroutineScope(Dispatchers.IO).launch{
             withContext(Dispatchers.Main){
-                //2) call Dao method that you need (here insertNote)
+                //2) call Dao method that you need (here getNotes)
                 rv_main.adapter=RecycelerAdapter(this@MainActivity,NotesDB.getNotesDao().getAll())
                 rv_main.layoutManager=LinearLayoutManager(this@MainActivity)
             }
@@ -80,6 +83,7 @@ class MainActivity : AppCompatActivity() {
             dialog, which ->
             if (editNote.text.isNotEmpty()){
                 CoroutineScope(Dispatchers.IO).launch {
+                    //2) call Dao method that you need (here updateNote)
                     NotesDB.getNotesDao().updateNote(NotesTable(notesTable.id, editNote.text.toString()))
                     getNote()
                 }
@@ -95,6 +99,7 @@ class MainActivity : AppCompatActivity() {
 
     fun delNote(notesTable: NotesTable){
         CoroutineScope(Dispatchers.IO).launch {
+            //2) call Dao method that you need (here delNote)
             NotesDB.getNotesDao().delNote(NotesTable(notesTable.id,notesTable.note))
             getNote()
         }
